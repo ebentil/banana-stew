@@ -1,0 +1,28 @@
+---
+#file: mariadb.yml
+- hosts: servers
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Add MariaDB repository
+    yum_repository:
+     name: mariadb
+     description: mariadb YUM repo
+     baseurl: "http://yum.mariadb.org/10.1/centos7-amd64"
+     gpgkey: "https://yum.mariadb.org/RPM-GPG-KEY-MariaDB"
+     gpgcheck: 1
+  - name: Install MariaDB Server
+    yum: pkg=mariadb-server state=latest
+  - name: Install MariaDB Client
+    yum: pkg=mariadb state=latest
+  - name: Install MariaDB Common
+    yum: pkg=mariadb-common state=latest
+  - name: Install git
+    yum: pkg=git state=latest
+  - name: (Enable MariaDB on System Root)
+    service: name=mariadb enabled=yes
+    notify:
+    - start mariadb
+  handlers:
+   - name: start mariadb
+     service: name=mariadb state=started
